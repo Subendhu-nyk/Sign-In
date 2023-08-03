@@ -13,30 +13,25 @@ server.use(bodyParser.urlencoded({extended:false}))
 server.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname,'views','login.html'))
 })
+
+let newUserdata = {};
 server.post('/user', async (req, res) => {
     try {
       
       const email = req.body.email;     
       const password=req.body.password
       
-      if(email==null ||email.length===0|| password==null || password.length===0){
+      if(email==undefined ||email.length===0|| password==undefined || password.length===0){
         return res.status(400).json({message:"Bad parameter or something is missing"})
-      }
-      
+      }      
       const data = {
         email:email,     
         password: password
       }
-
-      // const data = await Sequelize.create({
-      //   name: name,
-      //   email:email,
-      //   phone:phone,
-      //   password: password,
-       
-      // }); 
+      newUserdata=data;    
           
       res.status(201).json({ newUserdata: data });
+      console.log(data)
 
     } catch (err) {       
     res.status(500).json({ error:"some error", err }) 
@@ -45,9 +40,23 @@ server.post('/user', async (req, res) => {
 
   server.get('/user',async(req,res)=>{
     try{
-    const user=await Sequelize.findAll();
-    
-    res.status(200).json({allExpenses:expenses});
+    const allUserdata=await Sequelize.findAll();     
+   
+    let success = false;
+    allUserdata.forEach((user) => {
+      if (newUserdata.email === user.email && newUserdata.password === user.password) {
+        success = true;
+      }
+    });
+
+    if (success) {
+      console.log("success");
+      res.send('success');
+    } else {
+      console.log('Failure');
+      res.redirect('/');
+    }
+
     }catch(err){
         console.log('get user is failing', JSON.stringify(err))
         res.status(500).json({error:err })

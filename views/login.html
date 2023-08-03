@@ -54,19 +54,17 @@
             event.preventDefault();
             const email=document.getElementById('email').value            
             const password=document.getElementById('password').value
-            const obj={
-                name,
+            const obj={                
                 email,
-                phone,
                 password
             }
-            console.log(obj)
+            
 
             try{
                 const response= await axios.post('http://localhost:3000/user',obj)
                 console.log(response.data.newUserdata)
                 if(response.status===201){
-                  window.location.href='/'  
+                  window.location.href='/user'  
                 }
                 else{
                     throw new Error('failed to login')
